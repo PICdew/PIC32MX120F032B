@@ -23,6 +23,82 @@
 #define LOW 0
 
 
+/*
+ * Even though it seems impossible, in this MCU
+ * there are limited groups of pins which are
+ * mappable to limited groups of inputs and limited
+ * groups of pins that can map to limited groups of
+ * outputs. In order to make this passage as easy and
+ * error-free as possible to the developer, it is
+ * necessary to find a safe but light way to map
+ * every pin to a set of peripheral input and a set
+ * of peripheral output. Luckily, at least, those pin
+ * groups are fixed. Accordingly, input and output 
+ * peripherals will be mapped in a constant struct which
+ * will be pointed by the pin.
+ */
+
+/* Indexes for Input Group 1 */
+#define INT4        0b0000
+#define T2CK        0b0001
+#define IC4         0b0010
+#define SS1         0b0011
+#define REFCLKI     0b0100
+
+/* Indexes for Input Group 2 */
+#define INT3        0b0001
+#define T3CK        0b0010
+#define IC3         0b0011
+#define U1CTS       0b0100
+#define U2RX        0b0101
+#define SDI1        0b0110
+
+/* Indexes for Input Group 3 */
+#define INT2        0b0001
+#define T4CK        0b0010
+#define IC1         0b0011
+#define IC5         0b0100
+#define U1RX        0b0101
+#define U2CTS       0b0110
+#define SDI2        0b0111
+#define OCFB        0b1000
+
+/* Indexes for Input Group 4 */
+#define INT1        0b0001
+#define T5CK        0b0010
+#define IC2         0b0011
+#define SS2         0b0100
+#define OCFA        0b0101
+
+#define NO_CONNECT  0b0000
+/* Indexes for the Output Group 1 */
+#define U1TX        0b0001
+#define U2RTS       0b0010
+#define SS1         0b0011
+#define OC1         0b0101
+#define C2OUT       0b0111
+
+/* Indexes for the Output Group 2 */
+#define SDO1        0b0011
+#define SDO2        0b0100
+#define OC2         0b0101
+#define C3OUT       0b0111
+
+/* Indexes for the Output Group 3 */
+//#define SDO1      0b0011 //already defined
+//#define SDO2      0b0100 //already defined
+#define OC4         0b0101
+#define OC5         0b0110
+#define REFCLKO     0b0111
+
+/* Indexes for the Output Group 4 */
+#define U1RTS       0b0001
+#define U2TX        0b0010
+#define SS2         0b0100
+#define OC3         0b0101
+#define C1OUT       0b0111
+
+
 /**
   @Summary
     The struct represents an IO port of the MCU
@@ -92,7 +168,9 @@ typedef struct{
     requires a strong set of informations. Those involves IO port registers,
     masks for pin setting, value to set on input_pps registers and pointer to
     the output PPS register. For the PIC32MX series, Peripheral Pin Select (PPS)
-    allows remapping of digital peripherals only (UART, SPI, I2C, CAN, ...)
+    allows remapping of digital peripherals only (UART, SPI, CAN, ...).
+    <b>PPS is allowed only if CFGCON<13> = 0 </b>. <br/>
+        Not all peripherals can be mapped freely to all pins.
  @Remarks
     Follows the description of every field of the struct.
     <li>

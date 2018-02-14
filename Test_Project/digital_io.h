@@ -234,8 +234,22 @@ extern const pps_block GROUP3;
 extern const pps_block GROUP4;
 
 
-#endif /* _EXAMPLE_FILE_NAME_H */
+extern inline void pin_set_direction(const pin *p, unsigned char direction);
+extern inline void pin_set_output_state(const pin *p, unsigned char value);
+extern inline void pin_set_output_high(const pin *p);
+extern inline void pin_set_output_low(const pin *p);
+extern inline void pin_invert(const pin *p);
+extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral);
+extern inline void pin_open_drain_selection(const pin *p, unsigned char request);
+extern inline void pin_select_working_mode(const pin *p, unsigned char analog_digital);
+extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated, unsigned char stop_in_idle);
+extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
+extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
 
-/* *****************************************************************************
- End of File
- */
+extern inline void port_set_direction(const io_port *p, unsigned int mask);
+extern inline void port_set_output_state(const io_port *p, unsigned int mask);
+extern inline void port_set_output(const io_port *p);
+extern inline void port_set_input(const io_port *p);
+extern inline void port_invert(const io_port *p);
+
+#endif

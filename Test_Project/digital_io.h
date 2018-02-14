@@ -22,82 +22,48 @@
  */
 #define LOW 0
 
-
-/*
- * Even though it seems impossible, in this MCU
- * there are limited groups of pins which are
- * mappable to limited groups of inputs and limited
- * groups of pins that can map to limited groups of
- * outputs. In order to make this passage as easy and
- * error-free as possible to the developer, it is
- * necessary to find a safe but light way to map
- * every pin to a set of peripheral input and a set
- * of peripheral output. Luckily, at least, those pin
- * groups are fixed. Accordingly, input and output 
- * peripherals will be mapped in a constant struct which
- * will be pointed by the pin.
+/**
+ @Summary
+    Represents the INPUT kind of a peripheral
  */
+#define INPUT 0
+/**
+ @Summary
+    Represents the OUTPUT kind of a peripheral
+ */
+#define OUTPUT 1
 
-/* Indexes for Input Group 1 */
-#define _INT4        0b0000
-#define _T2CK        0b0001
-#define _IC4         0b0010
-#define _SS1         0b0011
-#define _REFCLKI     0b0100
+/**
+ @Summary
+    For PPS Input modules, placeholder for the <code>code</code> field which is unused
+ */
+#define NONE 0xFFu
 
-/* Indexes for Input Group 2 */
-#define _INT3        0b0001
-#define _T3CK        0b0010
-#define _IC3         0b0011
-#define _U1CTS       0b0100
-#define _U2RX        0b0101
-#define _SDI1        0b0110
+/**
+ @Summary
+    The struct represents a PPS peripheral of the MCU
+ @Description
+    According to the MCU PPS structure, not every pin is mappable with every
+    PPS peripheral. Instead, each group of 5 pins is mappable to a predetermined
+    set of inputs and outputs. In order not to risk to initialize a wrong peripheral
+    on a pin, each peripheral is defined as a struct containing, together with its
+    code, information about its role and even the PPS register. When packet into pps
+    groups, everything becomes restricted.
+ @Remarks
+    Follows the description of every field of the struct.
+    <li>
+        <ul><code>const unsigned char code</code> :code for PPS output</ul>
+        <ul><code>const unsigned char io</code> : flag marker for input/output</ul>
+        <ul><code>const unsigned int *const *input_pps</code> : pointer to PPS input register </ul>
+    </li>
+ */
+typedef struct{
+    const unsigned char code;
+    const unsigned char io;
+    volatile unsigned int *input_pps;
+} peripheral;
 
-/* Indexes for Input Group 3 */
-#define _INT2        0b0001
-#define _T4CK        0b0010
-#define _IC1         0b0011
-#define _IC5         0b0100
-#define _U1RX        0b0101
-#define _U2CTS       0b0110
-#define _SDI2        0b0111
-#define _OCFB        0b1000
-
-/* Indexes for Input Group 4 */
-#define _INT1        0b0001
-#define _T5CK        0b0010
-#define _IC2         0b0011
-#define _SS2         0b0100
-#define _OCFA        0b0101
-
-#define _NO_CONNECT  0b0000
-/* Indexes for the Output Group 1 */
-#define _U1TX        0b0001
-#define _U2RTS       0b0010
-#define _SS1         0b0011
-#define _OC1         0b0101
-#define _C2OUT       0b0111
-
-/* Indexes for the Output Group 2 */
-#define _SDO1        0b0011
-#define _SDO2        0b0100
-#define _OC2         0b0101
-#define _C3OUT       0b0111
-
-/* Indexes for the Output Group 3 */
-//#define _SDO1      0b0011 //already defined
-//#define _SDO2      0b0100 //already defined
-#define _OC4         0b0101
-#define _OC5         0b0110
-#define _REFCLKO     0b0111
-
-/* Indexes for the Output Group 4 */
-#define _U1RTS       0b0001
-#define _U2TX        0b0010
-#define _SS2         0b0100
-#define _OC3         0b0101
-#define _C1OUT       0b0111
-
+typedef const peripheral* pps_block[16];
 
 /**
   @Summary
@@ -146,18 +112,18 @@
     </li>
  */
 typedef struct{
-    volatile unsigned int *const *tris;
-    volatile unsigned int *const *lat;
-    volatile unsigned int *const *port;
-    volatile unsigned int *const *odc;
-    volatile unsigned int *const *cnen;
-    volatile unsigned int *const *cnstat;
-    volatile unsigned int *const *cnpu;
-    volatile unsigned int *const *cnpd;
-    volatile unsigned int *const *cncon;
-    volatile unsigned int *const *clr;
-    volatile unsigned int *const *inv;
-    volatile unsigned int *const *set;
+    volatile unsigned int *tris;
+    volatile unsigned int *lat;
+    volatile unsigned int *port;
+    volatile unsigned int *odc;
+    volatile unsigned int *cnen;
+    volatile unsigned int *cnstat;
+    volatile unsigned int *cnpu;
+    volatile unsigned int *cnpd;
+    volatile unsigned int *cncon;
+    volatile unsigned int *clr;
+    volatile unsigned int *inv;
+    volatile unsigned int *set;
 }io_port;
 
 /**
@@ -188,40 +154,12 @@ typedef struct{
         <ul><code>const pps_block *const *pps</code> : pointer to the pps_block associated </ul>
     </li>
  */
-
 typedef struct{
-    volatile io_port *const *io;
+    const io_port *io;
     const unsigned int mask;
-    volatile unsigned int *const *output_pps;
-    const pps_block *const *pps;
+    volatile unsigned int *output_pps;
+    const pps_block *pps;
 } pin;
-
-
-/**
- @Summary
-    The struct represents a PPS peripheral of the MCU
- @Description
-    According to the MCU PPS structure, not every pin is mappable with every
-    PPS peripheral. Instead, each group of 5 pins is mappable to a predetermined
-    set of inputs and outputs. In order not to risk to initialize a wrong peripheral
-    on a pin, each peripheral is defined as a struct containing, together with its
-    code, information about its role and even the PPS register. When packet into pps
-    groups, everything becomes restricted.
- @Remarks
-    Follows the description of every field of the struct.
-    <li>
-        <ul><code>const unsigned char code</code> :code for PPS output</ul>
-        <ul><code>const unsigned char io</code> : flag marker for input/output</ul>
-        <ul><code>const unsigned int *const *input_pps</code> : pointer to PPS input register </ul>
-    </li>
- */
-typedef struct{
-    const unsigned char code : 4;
-    const unsigned char io : 2;
-    const unsigned int *const *input_pps;
-} peripheral;
-
-typedef peripheral pps_block[16];
 
 
 extern const io_port RA;
@@ -250,8 +188,51 @@ extern const pin RB13;
 extern const pin RB14;
 extern const pin RB15;
 
+extern const peripheral INT1;
+extern const peripheral INT2;
+extern const peripheral INT3;
 extern const peripheral INT4;
 extern const peripheral T2CK;
+extern const peripheral T3CK;
+extern const peripheral T4CK;
+extern const peripheral T5CK;
+extern const peripheral IC1;
+extern const peripheral IC2;
+extern const peripheral IC3;
+extern const peripheral IC4;
+extern const peripheral IC5;
+extern const peripheral OC1;
+extern const peripheral OC2;
+extern const peripheral OC3;
+extern const peripheral OC4;
+extern const peripheral OC5;
+extern const peripheral REFCLKI;
+extern const peripheral REFCLKO;
+extern const peripheral U1CTS;
+extern const peripheral U1RTS;
+extern const peripheral U1RX;
+extern const peripheral U1TX;
+extern const peripheral U2CTS;
+extern const peripheral U2RTS;
+extern const peripheral U2RX;
+extern const peripheral U2TX;
+extern const peripheral SDI1;
+extern const peripheral SDO1;
+extern const peripheral SS1;
+extern const peripheral SDI2;
+extern const peripheral SDO2;
+extern const peripheral SS2;
+extern const peripheral OCFA;
+extern const peripheral OCFB;
+extern const peripheral C1OUT;
+extern const peripheral C2OUT;
+extern const peripheral C3OUT;
+
+extern const pps_block GROUP1;
+extern const pps_block GROUP2;
+extern const pps_block GROUP3;
+extern const pps_block GROUP4;
+
 
 #endif /* _EXAMPLE_FILE_NAME_H */
 

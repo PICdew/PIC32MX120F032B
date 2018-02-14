@@ -41,10 +41,10 @@ const peripheral C1OUT =    { 7, OUTPUT, NULL } ;
 const peripheral C2OUT =    { 7, OUTPUT, NULL } ;
 const peripheral C3OUT =    { 7, OUTPUT, NULL } ;
 
-const pps_block GROUP1 = { &INT4, &T2CK, &IC4, &SS1, &REFCLKI, &U1TX, &U2RTS,  &OC1, &C2OUT } ;
-const pps_block GROUP2 = { &INT3, &T3CK, &IC3, &U1CTS, &U2RX, &SDI1, &SDO1, &SDO2, &OC2, &C3OUT} ;
-const pps_block GROUP3 = { &INT2, &T4CK, &IC1, &IC5, &U1RX, &U2CTS, &SDI2, &OCFB, &SDO1, &SDO2, &OC4, &OC5, &REFCLKO } ;
-const pps_block GROUP4 = { &INT1, &T5CK, &IC2, &SS2, &OCFA, &U1RTS, &U2TX, &OC3, &C1OUT } ;
+const pps_block GROUP1 = { &INT4, &T2CK, &IC4, &SS1, &REFCLKI, &U1TX, &U2RTS,  &OC1, &C2OUT, NULL } ;
+const pps_block GROUP2 = { &INT3, &T3CK, &IC3, &U1CTS, &U2RX, &SDI1, &SDO1, &SDO2, &OC2, &C3OUT, NULL} ;
+const pps_block GROUP3 = { &INT2, &T4CK, &IC1, &IC5, &U1RX, &U2CTS, &SDI2, &OCFB, &SDO1, &SDO2, &OC4, &OC5, &REFCLKO, NULL } ;
+const pps_block GROUP4 = { &INT1, &T5CK, &IC2, &SS2, &OCFA, &U1RTS, &U2TX, &OC3, &C1OUT, NULL } ;
 
 const io_port RA = { &TRISA, &LATA, &PORTA, &ODCA, &CNENA, &CNSTATA, &CNPUA, &CNPDA, &CNCONA, &PORTASET, &PORTACLR, &PORTAINV } ;
 const io_port RB = { &TRISB, &LATB, &PORTB, &ODCB, &CNENB, &CNSTATB, &CNPUB, &CNPDB, &CNCONB, &PORTBSET, &PORTBCLR, &PORTBINV };

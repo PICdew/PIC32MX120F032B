@@ -26,17 +26,17 @@
  @Summary
     Represents the INPUT kind of a peripheral
  */
-#define INPUT 0
+#define INPUT 1
 /**
  @Summary
     Represents the OUTPUT kind of a peripheral
  */
-#define OUTPUT 1
+#define OUTPUT 0
 
 /**
  @Summary
     For PPS Input modules, placeholder for the <code>code</code> field which is unused
- */
+*/
 #define NONE 0xFFu
 
 /**

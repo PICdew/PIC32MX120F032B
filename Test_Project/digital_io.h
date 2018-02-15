@@ -63,11 +63,11 @@
     groups, everything becomes restricted.
  @Remarks
     Follows the description of every field of the struct.
-    <li>
-        <ul><code>const unsigned char code</code> :code for PPS output</ul>
-        <ul><code>const unsigned char io</code> : flag marker for input/output</ul>
-        <ul><code>const unsigned int *const *input_pps</code> : pointer to PPS input register </ul>
-    </li>
+    <ul>
+        <li><code>const unsigned char code</code> :code for PPS output</li>
+        <li><code>const unsigned char io</code> : flag marker for input/output</li>
+        <li><code>const unsigned int *const *input_pps</code> : pointer to PPS input register </li>
+    </ul>
  */
 typedef struct{
     const unsigned char code;
@@ -90,38 +90,38 @@ typedef const peripheral* pps_block[16];
  
   @Remarks
     Here are the specifications of every register pointer:
-    <li>
-        <ul><code>volatile unsigned int *const *tris</code> : pointer to the TRIS register. It is responsible
-            for the Tri-State, involved in pin role switching between input and output </ul>
-        <ul><code>volatile unsigned int *const *lat</code> : pointer to the LAT register. This is responsible
-            for digital writes on output pins. </ul>
-        <ul><code>volatile unsigned int *const *port</code> : pointer to the PORT register. It is responsible
+    <ul>
+        <li><code>volatile unsigned int *const *tris</code> : pointer to the TRIS register. It is responsible
+            for the Tri-State, involved in pin role switching between input and output </li>
+        <li><code>volatile unsigned int *const *lat</code> : pointer to the LAT register. This is responsible
+            for digital writes on output pins. </li>
+        <li><code>volatile unsigned int *const *port</code> : pointer to the PORT register. It is responsible
             for the read operations. Any write operation on this register will affect
-            latches anyway.</ul>
-        <ul><code>volatile unsigned int *const *odc</code> : pointer to the ODC register. The Open-Drain Configuration
+            latches anyway.</li>
+        <li><code>volatile unsigned int *const *odc</code> : pointer to the ODC register. The Open-Drain Configuration
             allows the user to manage a pin as open-drain, allowing it to output
             voltages higher than the MCU Vdd when an external pull-up is correctly
-            positioned, limited to the Vih of the MCU</ul>
-        <ul><code>volatile unsigned int *const *cnen</code> : pointer to the CNEN register. The Change Notification
+            positioned, limited to the Vih of the MCU</li>
+        <li><code>volatile unsigned int *const *cnen</code> : pointer to the CNEN register. The Change Notification
             Enable register allows the MCU to trigger an interrupt on variation of
-            singular pins.</ul>
-        <ul><code>volatile unsigned int *const *cnstat</code> : pointer to the CNSTAT register. This register
-            is read-only and changes whenever a pin of the port changes its state.</ul>
-        <ul><code>volatile unsigned int *const *cnpu</code> : pointer to the CNPU register. Writes on this register
-            enable/disable internal weak pull-ups for MCU's pins of the port.</ul>
-        <ul><code>volatile unsigned int *const *cnpd</code> : pointer to the CNPD register. Writes on this register
-            enable/disable internal weak pull-down for MCU's pins of the port. </ul>
-        <ul><code>volatile unsigned int *const *cncon</code> : pointer to the CNCON register. </ul>
-        <ul><code>volatile unsigned int *const *clr</code> : pointer to the CLR register. This write-only register
+            singular pins.</li>
+        <li><code>volatile unsigned int *const *cnstat</code> : pointer to the CNSTAT register. This register
+            is read-only and changes whenever a pin of the port changes its state.</li>
+        <li><code>volatile unsigned int *const *cnpu</code> : pointer to the CNPU register. Writes on this register
+            enable/disable internal weak pull-ups for MCU's pins of the port.</li>
+        <li><code>volatile unsigned int *const *cnpd</code> : pointer to the CNPD register. Writes on this register
+            enable/disable internal weak pull-down for MCU's pins of the port. </li>
+        <li><code>volatile unsigned int *const *cncon</code> : pointer to the CNCON register. </li>
+        <li><code>volatile unsigned int *const *clr</code> : pointer to the CLR register. This write-only register
             is a shortcut for atomic pin clear operations on a port. After a write 
-            on this register, every high bit clears the associated pin </ul>
-        <ul><code>volatile unsigned int *const *inv</code> : pointer to INV register. This write-only register,
+            on this register, every high bit clears the associated pin </li>
+        <li><code>volatile unsigned int *const *inv</code> : pointer to INV register. This write-only register,
             when written, inverts the state of every output pin associated with
-            high bits of the register written </ul>
-        <ul><code>volatile unsigned int *const *set</code> : pointer to the SET register. This write-only register
+            high bits of the register written </li>
+        <li><code>volatile unsigned int *const *set</code> : pointer to the SET register. This write-only register
             allows atomic bit set operations. After a write on the register, every 
-            output pin associated to high bits of the register is set high </ul>
-    </li>
+            output pin associated to high bits of the register is set high </li>
+    </ul>
  */
 typedef struct{
     volatile unsigned int *tris;
@@ -151,20 +151,20 @@ typedef struct{
         Not all peripherals can be mapped freely to all pins.
  @Remarks
     Follows the description of every field of the struct.
-    <li>
-        <ul><code>volatile io_port *const *io</code> : pointer to an io_port. The io_port struct contains
+    <ul>
+        <li><code>volatile io_port *const *io</code> : pointer to an io_port. The io_port struct contains
             pointers to every useful i/o register. This workaround allows the
             library to allocate only one io_port struct for every port and point
             to it instead of duplicating registers on every pin struct. Delcared
-            as volatile *const, avoiding unintentional modifications and access issues.</ul>
-        <ul><code>const unsigned int mask</code> : this represents the mask value for
+            as volatile *const, avoiding unintentional modifications and access issues.</li>
+        <li><code>const unsigned int mask</code> : this represents the mask value for
             the peculiar pin. This value identifies which bit of the registers must be
-            manipulated in order to work on the pin itself. </ul>
-        <ul><code>volatile unsigned int *const *output_pps</code> : this is a pointer
+            manipulated in order to work on the pin itself. </li>
+        <li><code>volatile unsigned int *const *output_pps</code> : this is a pointer
             to the PPS Output register that must be manipulated in order to map an output
-            on this pin. </ul>
-        <ul><code>const pps_block *const *pps</code> : pointer to the pps_block associated </ul>
-    </li>
+            on this pin. </li>
+        <li><code>const pps_block *const *pps</code> : pointer to the pps_block associated </li>
+    </ul>
  */
 typedef struct{
     const io_port *io;
@@ -172,6 +172,14 @@ typedef struct{
     volatile unsigned int *output_pps;
     const pps_block *pps;
 } pin;
+
+/**
+ @Summary
+    The struct represents an arbitrary group of pin
+ @Description
+    It's used to determine peculiar groups (like 5v tolerant pins, analog pins, etc...)
+ */
+typedef pin* pin_group[16];
 
 
 
@@ -426,10 +434,10 @@ extern inline unsigned char pin_read(const pin *p);
     None.
 
 @Returns
-<li>
-    <ul><code>1</code> if the assignment is legal and done</ul>
-    <ul><code>0</code> if the assignment is not legal and no action was taken</ul>
-</li>
+<ul>
+    <li><code>1</code> if the assignment is legal and done</li>
+    <li><code>0</code> if the assignment is not legal and no action was taken</li>
+</ul>
  
 @Parameters
     @param p A <code>const *pin</code> from the available pins
@@ -450,11 +458,11 @@ extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral)
 
 /**
 @Function
-  inline void pin_open_drain_selection(const pin *p, unsigned char request)
+  inline unsigned char pin_open_drain_selection(const pin *p, unsigned char request)
 
 @Summary
     The function turns ON or OFF Open Drain function for the required pin
-    according to <code>request</code> value.
+    according to <code>request</code> value, if the pin is 5V tolerant.
 
 @Description
     The function resolves the request in 2 cycles. There's no faster alternative
@@ -468,23 +476,29 @@ extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral)
   @param p A <code>const *pin</code> from the available and defined pins
   @param request the Open Drain selection (ON or OFF)
 
+@Returns
+<ul>
+    <li><code>1</code> if the assignment is legal and done (pin is 5V-tolerant)</li>
+    <li><code>0</code> if the assignment is not legal and no operation has been done </li>
+</ul>
 @Remarks
-    The remappable pins are all 5V-tolerant. An external pull-up resistor is
-    required to reach the 5V threshold
+    Only a couple of pins are 5V-tolerant, precisely from RB5 to RB11 
  
 @Example
     @code
-    pin_open_drain_selection(&RA0, ON); //set RA0 as Open Drain
-    pin_open_drain_selection(&RB4, OFF);//set RB4 as digital
+    pin_open_drain_selection(&RB5, ON); //set RA0 as Open Drain, returns 1
+    pin_open_drain_selection(&RB7, OFF);//set RB4 as digital, returns 1
+    pin_open_drain_selection(&RA0, OFF);//does nothing and returns 0 (pin not 5V-tolerant)
 */
-extern inline void pin_open_drain_selection(const pin *p, unsigned char request);
+extern inline unsigned char pin_open_drain_selection(const pin *p, unsigned char request);
 
 /**
 @Function
-    inline void pin_select_working_mode(const pin *p, unsigned char analog_digital)
+    inline unsigned char pin_select_working_mode(const pin *p, unsigned char analog_digital)
 
 @Summary
-    The function sets the given pin as DIGITAL or ANALOGIC
+    The function sets the given pin as DIGITAL or ANALOGIC, but only if the pin is
+    one of the analog set.
 
 @Description
     The function interacts with ANSELx register.
@@ -496,16 +510,29 @@ extern inline void pin_open_drain_selection(const pin *p, unsigned char request)
   @param p A <code>const *pin</code> from the available and defined pins
   @param analog_digital the pin selection between ANALOGIC and DIGITAL
 
+@Returns
+<ul>
+    <li><code>1</code> if the association is legal and has been committed</li>
+    <li><code>0</code> if the association is not legal and no operation was instantiated</li>
+</ul>
+
 @Remarks
     The only available analogic peripheral is ADC, so you probably want to set
-    the pin as input before switching to ANALOGIC.
+    the pin as input before switching to ANALOGIC. The only analog pins available are:
+    <ul>
+        <li>RA0, RA1 as AN0, AN1</li>
+        <li>RB0 to RB3 as AN2 to AN5</li>
+        <li>RB12, RB13 as AN12, AN11</li>
+        <li>RB15 as AN9</li>
+    </ul>
  
 @Example
     @code
-    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
-    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic, returns 1
+    pin_select_working_mode(&RB3, DIGITAL);//set RB3 as digital, returns 1
+    pin_select_working_mode(&RA2, DIGITAL);//does nothing, return 0
 */
-extern inline void pin_select_working_mode(const pin *p, unsigned char analog_digital);
+extern inline unsigned char pin_select_working_mode(const pin *p, unsigned char analog_digital);
 
 /**
 @Function

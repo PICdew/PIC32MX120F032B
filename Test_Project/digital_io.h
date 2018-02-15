@@ -382,6 +382,32 @@ extern inline void pin_invert(const pin *p);
 
 /**
 @Function
+  inline unsigned char pin_read(const pin *p)
+
+@Summary
+    The function returns the current value of the digital pin
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves inline in 1 cycle,
+    consequentially not affecting temporized operations.
+    The code interacts with the LATxINV register associated to the pin.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+@Example
+    @code
+    pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
+    pin_invert(&RB3);          //inverts RB3 to LOW (LATBINV<4> = 1)
+*/
+extern inline unsigned char pin_read(const pin *p);
+
+/**
+@Function
   unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral)
 
 @Summary
@@ -536,8 +562,8 @@ extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char ac
  
 @Example
     @code
-    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
-    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+    pin_assign_pull_up(&RA0, ON); //activates internal pull-up on RA0
+    pin_assign_pull_up(&RB3, OFF);//deactivates internal pull-up on RB3
 */
 extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
 
@@ -565,14 +591,81 @@ extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
  
 @Example
     @code
-    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
-    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+    pin_assign_pull_up(&RA0, ON); //activates internal pull-down on RA0
+    pin_assign_pull_up(&RB3, OFF);//deactivates internal pull-down on RB3
 */
 extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
+
+/**
+@Function
+    inline void port_set_direction(const io_port *p, unsigned int mask)
+
+@Summary
+    The function sets up the direction of each pin of the port according to the mask
+
+@Description
+    The function works as proxy for the TRIS assignment, but it makes the code
+    easier to understand
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *io_port</code> from the available and defined ports (RA, RB)
+  @param mask the mask to be written on the register
+ 
+@Example
+    @code
+    port_set_direction(&RA, 0b11111); //sets entire Port A as Input
+*/
 extern inline void port_set_direction(const io_port *p, unsigned int mask);
+
+/**
+@Function
+    inline void port_set_output_state(const io_port *p, unsigned int mask)
+
+@Summary
+    The function sets up the output value of each pin of the port according to the mask
+
+@Description
+    The function works as proxy for the LAT assignment, but it makes the code
+    easier to understand
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *io_port</code> from the available and defined ports (RA, RB)
+  @param mask the mask to be written on the register
+ 
+@Example
+    @code
+    port_set_output_state(&RA, 0b11111); //sets entire Port A output as HIGH
+*/
 extern inline void port_set_output_state(const io_port *p, unsigned int mask);
-extern inline void port_set_output(const io_port *p);
-extern inline void port_set_input(const io_port *p);
-extern inline void port_invert(const io_port *p);
+
+/**
+@Function
+    inline void port_invert(const io_port *p)
+
+@Summary
+    The function inverts the state of every selected pin of the port
+
+@Description
+    The function works as proxy for the LATxINV assignment, but it makes the code
+    easier to understand
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *io_port</code> from the available and defined ports (RA, RB)
+  @param mask the mask to be written on the register
+ 
+@Example
+    @code
+    port_set_output_state(&RA, 0b11111); //sets entire Port A output as HIGH
+*/
+extern inline void port_invert(const io_port *p, unsigned char mask);
 
 #endif

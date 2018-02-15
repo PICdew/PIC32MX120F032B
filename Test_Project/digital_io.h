@@ -179,7 +179,7 @@ typedef struct{
  @Description
     It's used to determine peculiar groups (like 5v tolerant pins, analog pins, etc...)
  */
-typedef pin* pin_group[16];
+typedef const pin* pin_group[16];
 
 
 

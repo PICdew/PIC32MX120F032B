@@ -41,6 +41,18 @@
 
 /**
  @Summary
+    For Analog/Digital selection function, represents the DIGITAL selection
+ */
+#define DIGITAL 0
+
+/**
+ @Summary
+    For Analog/Digital selection function, represents the ANALOGIC selection
+ */
+#define ANALOGIC 1
+
+/**
+ @Summary
     The struct represents a PPS peripheral of the MCU
  @Description
     According to the MCU PPS structure, not every pin is mappable with every
@@ -162,6 +174,7 @@ typedef struct{
 } pin;
 
 
+
 extern const io_port RA;
 extern const io_port RB;
 
@@ -233,19 +246,329 @@ extern const pps_block GROUP2;
 extern const pps_block GROUP3;
 extern const pps_block GROUP4;
 
+/**
+@Function
+  inline void pin_set_direction(const pin *p, unsigned char direction)
 
+@Summary
+    The fuction sets a digital pin as input or output
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves the request in 2 cycles.
+    The code interacts with the TRISx register associated to the pin.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+  @param direction Desired direction, which can be INPUT or OUTPUT
+
+@Example
+    @code
+    pin_set_direction(&RB4, INPUT); //sets RB4 pin as input (TRISB<5> = 1)
+    pin_set_direction(&RA3, OUTPUT); //sets RA3 pin as output (TRISA<4> = 0)
+*/
 extern inline void pin_set_direction(const pin *p, unsigned char direction);
-extern inline void pin_set_output_state(const pin *p, unsigned char value);
-extern inline void pin_set_output_high(const pin *p);
-extern inline void pin_set_output_low(const pin *p);
-extern inline void pin_invert(const pin *p);
-extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral);
-extern inline void pin_open_drain_selection(const pin *p, unsigned char request);
-extern inline void pin_select_working_mode(const pin *p, unsigned char analog_digital);
-extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated, unsigned char stop_in_idle);
-extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
-extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
 
+/**
+@Function
+  inline void pin_set_output_state(const pin *p, unsigned char value)
+
+@Summary
+    The fuction sets the output of a digital pin (HIGH or LOW)
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves in 2 cycles due to
+    conditional controls. For a fast, 1 cycle access use 
+    <code>pin_set_output_high(const pin *p)</code> or <code>pin_set_output_low(const pin *p)</code>
+    instead. For multiple access to different pins, use 
+    <code>port_set_output_state(const io_port *p. unsigned int mask)</code>.
+    The function affects the content of LATx register.
+
+@Precondition
+    Required pin must be already set as OUTPUT; otherwise, port won't be written
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+  @param value Desired output value, which can be HIGH or LOW (ON or OFF are accepted too)
+
+@Example
+    @code
+    pin_set_output_state(&RB4, HIGH); //sets RB4 pin high (LATB<5> = 1)
+    pin_set_output_state(&RA3, LOW); //sets RA3 pin low (LATA<4> = 0)
+*/
+extern inline void pin_set_output_state(const pin *p, unsigned char value);
+
+/**
+@Function
+  inline void pin_set_output_high(const pin *p)
+
+@Summary
+    The fuction drives the requested pin HIGH
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves inline in 1 cycle,
+    consequentially not affecting temporized operations.
+    The code interacts with the LATx register associated to the pin.
+
+@Precondition
+    The pin must be set as OUTPUT; otherwise operation will be ignored
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+@Example
+    @code
+    pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
+*/
+extern inline void pin_set_output_high(const pin *p);
+
+/**
+@Function
+  inline void pin_set_output_low(const pin *p)
+
+@Summary
+    The fuction drives the requested pin LOW
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves inline in 1 cycle,
+    consequentially not affecting temporized operations.
+    The code interacts with the LATx register associated to the pin.
+
+@Precondition
+    The pin must be set as OUTPUT; otherwise operation will be ignored
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+@Example
+    @code
+    pin_set_output_low(&RB3); //drives RB3 LOW (LATB<4> = 0)
+*/
+extern inline void pin_set_output_low(const pin *p);
+
+/**
+@Function
+  inline void pin_invert(const pin *p)
+
+@Summary
+    The function inverts the current output state of the pin
+
+@Description
+    The advantage of using a function to set the pin over the register access
+    heavily helps code clearance. The function resolves inline in 1 cycle,
+    consequentially not affecting temporized operations.
+    The code interacts with the LATxINV register associated to the pin.
+
+@Precondition
+    The pin must be set as OUTPUT; otherwise operation will be ignored
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+
+@Example
+    @code
+    pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
+    pin_invert(&RB3);          //inverts RB3 to LOW (LATBINV<4> = 1)
+*/
+extern inline void pin_invert(const pin *p);
+
+/**
+@Function
+  unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral)
+
+@Summary
+    The function assigns the given peripheral to the given pin if possible.
+
+@Description
+    The function hides the underneath terrifying register structure for PPS.
+    The main issue about it is the fact that not every peripheral can be
+    mapped to any remappable pin. 4 groups of 5 pins each can be mapped to
+    four arbitrary groups of IOs defined by the datasheet through a really
+    intricate SFRs assignment system.
+    This function not only hides the different procedures for input or output
+    assignment but it detects whether an assignment is legal or not.
+
+@Precondition
+    None.
+
+@Returns
+<li>
+    <ul><code>1</code> if the assignment is legal and done</ul>
+    <ul><code>0</code> if the assignment is not legal and no action was taken</ul>
+</li>
+ 
+@Parameters
+    @param p A <code>const *pin</code> from the available pins
+    @param peripheral The pointer of an available peripheral between the defined ones
+
+@Remarks
+    A limited set of digital peripheral pins cannot be mapped to RP. This includes
+    SPI clock sources (SCK1 fixed on pin 22, SCK2 fixed on pin 23),
+    external Interrupt 0 source (fixed on pin 13) and the entire I2C module
+    (SCL on pin 14, SDA on pin 15).
+
+@Example
+    @code
+    pin_assign_peripheral(&RB3, &REFCLKI); //assigns REFCLKI peripheral to RB3, returns 1
+    pin_assign_peripheral(&RB4, &INT3);    //fails the assignment due to illegal pairing, returns 0
+*/
+extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral);
+
+/**
+@Function
+  inline void pin_open_drain_selection(const pin *p, unsigned char request)
+
+@Summary
+    The function turns ON or OFF Open Drain function for the required pin
+    according to <code>request</code> value.
+
+@Description
+    The function resolves the request in 2 cycles. There's no faster alternative
+    on this library for this operation; anyway this is not expected to be called
+    so often nor to be a 1 cycle operation. The functions interacts with ODCx register
+
+@Precondition
+    In order to activate Open Drain on a pin, the pin must be set as OUTPUT.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+  @param request the Open Drain selection (ON or OFF)
+
+@Remarks
+    The remappable pins are all 5V-tolerant. An external pull-up resistor is
+    required to reach the 5V threshold
+ 
+@Example
+    @code
+    pin_open_drain_selection(&RA0, ON); //set RA0 as Open Drain
+    pin_open_drain_selection(&RB4, OFF);//set RB4 as digital
+*/
+extern inline void pin_open_drain_selection(const pin *p, unsigned char request);
+
+/**
+@Function
+    inline void pin_select_working_mode(const pin *p, unsigned char analog_digital)
+
+@Summary
+    The function sets the given pin as DIGITAL or ANALOGIC
+
+@Description
+    The function interacts with ANSELx register.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+  @param analog_digital the pin selection between ANALOGIC and DIGITAL
+
+@Remarks
+    The only available analogic peripheral is ADC, so you probably want to set
+    the pin as input before switching to ANALOGIC.
+ 
+@Example
+    @code
+    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
+    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+*/
+extern inline void pin_select_working_mode(const pin *p, unsigned char analog_digital);
+
+/**
+@Function
+    inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated, unsigned char stop_in_idle)
+
+@Summary
+    The function turns ON or OFF the Interrupt On Change function for the selected
+    pin, together with the chance of turning it ON or OFF during Idle.
+
+@Description
+    The function interacts with CNENx register.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+  @param activated can be ON if activation of Interrupt On Change is required, OFF otherwise
+  @param stop_in_idle can be ON if the Interrupt shoudln't be raised during Idle, OFF otherwise
+
+@Remarks
+    Global Interrupt Enable must be active in order to make Interrupt-On-Change work. When
+    <code>activated</code> is OFF, <code>stop_in_idle</code> is DNC
+ 
+@Example
+    @code
+    pin_assign_interrupt_on_change(&RA0, ON, OFF); //set Interrupt on change on RA0, active in Idle
+    pin_assign_interrupt_on_change(&RB3, ON, ON);  //set Interrupt on change on RB3, stopped in Idle
+    
+*/
+extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated, unsigned char stop_in_idle);
+
+/**
+@Function
+    inline void pin_assign_pull_up(const pin *p, unsigned char activated)
+
+@Summary
+    The function turns ON or OFF the internal weak pull-up.
+
+@Description
+    The function interacts with CNPUx register.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+  @param activated can be ON if activation of Internal Weak Pull-up is required, OFF otherwise
+
+@Remarks
+    Even with Open Drain active, internal pull-up still pulls to Vdd; activating
+    weak pull-up on an externally pulled-up line may result in driver damage.
+    Internal pull-up tecnically does not pull at Vdd, but approximately ad Vdd - 0.7V
+ 
+@Example
+    @code
+    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
+    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+*/
+extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
+
+/**
+@Function
+    inline void pin_assign_pull_down(const pin *p, unsigned char activated)
+
+@Summary
+    The function turns ON or OFF the internal weak pull-down.
+
+@Description
+    The function interacts with CNPDx register.
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *pin</code> from the available and defined pins
+  @param activated can be ON if activation of Internal Pull-down is required, OFF otherwise
+
+@Remarks
+    Even with Open Drain active, internal pull-up still pulls to Vdd; activating
+    weak pull-up on an externally pulled-up line may result in driver damage.
+    Internal pull-up tecnically does not pull at Vdd, but approximately ad Vdd - 0.7V
+ 
+@Example
+    @code
+    pin_select_working_mode(&RA0, ANALOGIC); //set RA0 as analogic
+    pin_select_working_mode(&RB3, DIGITAL);//set RB4 as digital
+*/
+extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
 extern inline void port_set_direction(const io_port *p, unsigned int mask);
 extern inline void port_set_output_state(const io_port *p, unsigned int mask);
 extern inline void port_set_output(const io_port *p);

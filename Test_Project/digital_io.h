@@ -64,13 +64,13 @@
  @Remarks
     Follows the description of every field of the struct.
     <ul>
-        <li><code>const unsigned char code</code> :code for PPS output</li>
+        <li><code>const unsigned char output_pps_code</code> :code for PPS output</li>
         <li><code>const unsigned char io</code> : flag marker for input/output</li>
         <li><code>const unsigned int *const *input_pps</code> : pointer to PPS input register </li>
     </ul>
  */
 typedef struct{
-    const unsigned char code;
+    const unsigned char output_pps_code;
     const unsigned char io;
     volatile unsigned int *input_pps;
 } peripheral;
@@ -171,6 +171,7 @@ typedef struct{
     const unsigned int mask;
     volatile unsigned int *output_pps;
     const pps_block *pps;
+    const unsigned char pps_input_code;
 } pin;
 
 /**
@@ -180,7 +181,6 @@ typedef struct{
     It's used to determine peculiar groups (like 5v tolerant pins, analog pins, etc...)
  */
 typedef const pin* pin_group[16];
-
 
 
 extern const io_port RA;

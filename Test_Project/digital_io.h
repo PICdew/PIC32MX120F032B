@@ -546,12 +546,11 @@ extern inline unsigned char pin_select_working_mode(const pin *p, unsigned char 
     The function interacts with CNENx register.
 
 @Precondition
-    None.
+    If desired, behaviour in Idle should be set with <code>
 
 @Parameters
   @param p A <code>const *pin</code> from the available and defined pins
   @param activated can be ON if activation of Interrupt On Change is required, OFF otherwise
-  @param stop_in_idle can be ON if the Interrupt shoudln't be raised during Idle, OFF otherwise
 
 @Remarks
     Global Interrupt Enable must be active in order to make Interrupt-On-Change work. When
@@ -559,11 +558,11 @@ extern inline unsigned char pin_select_working_mode(const pin *p, unsigned char 
  
 @Example
     @code
-    pin_assign_interrupt_on_change(&RA0, ON, OFF); //set Interrupt on change on RA0, active in Idle
-    pin_assign_interrupt_on_change(&RB3, ON, ON);  //set Interrupt on change on RB3, stopped in Idle
+    pin_assign_interrupt_on_change(&RA0, ON); //set Interrupt on change on RA0
+    pin_assign_interrupt_on_change(&RB3, ON);  //set Interrupt on change on RB3
     
 */
-extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated, unsigned char stop_in_idle);
+extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated);
 
 /**
 @Function
@@ -618,8 +617,8 @@ extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
  
 @Example
     @code
-    pin_assign_pull_up(&RA0, ON); //activates internal pull-down on RA0
-    pin_assign_pull_up(&RB3, OFF);//deactivates internal pull-down on RB3
+    pin_assign_pull_down(&RA0, ON); //activates internal pull-down on RA0
+    pin_assign_pull_down(&RB3, OFF);//deactivates internal pull-down on RB3
 */
 extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
 
@@ -691,8 +690,34 @@ extern inline void port_set_output_state(const io_port *p, unsigned int mask);
  
 @Example
     @code
-    port_set_output_state(&RA, 0b11111); //sets entire Port A output as HIGH
+    port_invert(&RA, 0b11111); //inverts entire Port A output as HIGH
 */
 extern inline void port_invert(const io_port *p, unsigned char mask);
+
+/**
+@Function
+    inline void port_set_change_notice_behaviour(const io_port *p, unsigned char active, unsigned char stop_in_idle)
+
+@Summary
+    The function sets the working mode for the Interrupt On Change module for
+    IO ports.
+
+@Description
+    The function works as proxy for the CNSTATx assignment, but it makes the code
+    easier to understand
+
+@Precondition
+    None.
+
+@Parameters
+  @param p A <code>const *io_port</code> from the available and defined ports (RA, RB)
+  @param active sets whether the module should be ON or OFF
+  @param idle_state sets whether the module should be ON or OFF during Sleep/Idle
+ 
+@Example
+    @code
+    port_set_change_notice_behaviour(&RA, ON, OFF); //sets the Int. on change ON but OFF in idle
+*/
+extern void port_set_change_notice_behaviour(const io_port *p, unsigned char active, unsigned char idle_state);
 
 #endif

@@ -73,4 +73,114 @@ const pin RB14 = { &RB, 16384, &RPB14R, &GROUP4, 1 } ;
 const pin RB15 = { &RB, 32768, &RPB15R, &GROUP1, 3 } ;
 
 const pin_group open_drain_tolerant = { &RB5, &RB6, &RB7, &RB8, &RB9, &RB10, &RB11, NULL };
-const pin_group analog_channels = { &RA0, &RA1, &RB0, &RB1, &RB2, &RB3, &RB15, &RB13, &RB12, NULL } ;
+const pin_group analog_channels = { &RA0, &RA1, &RB0, &RB1, &RB2, &RB3, NULL, NULL, NULL, &RB15, &RB13, &RB12 } ;
+
+inline void pin_set_direction(const pin *p, unsigned char direction){
+    if(direction == INPUT) *(p->io->tris) |= p->mask;
+    else *(p->io->tris) &= ~(p->mask);
+}
+
+inline void pin_set_output_state(const pin *p, unsigned char value){
+    if(value == OUTPUT) *(p->io->lat) |= p->mask;
+    else *(p->io->lat) &= ~(p->mask);
+}
+
+inline void pin_set_output_high(const pin *p){
+    *(p->io->set) |= p->mask;
+}
+
+inline void pin_set_output_low(const pin *p){
+    *(p->io->clr) |= p->mask;
+}
+
+inline void pin_invert(const pin *p){
+    *(p->io->inv) |= p->mask;
+}
+
+inline unsigned char pin_read(const pin *p){
+    return (*(p->io->port) & p->mask) == p->mask;
+}
+
+/*
+ * Function only used by library. Sequential check of the PPS block given to
+ * check if the pin belongs. I'd love to make a smarter search system, but
+ * I don't trust (and I don't even think it's allowed) recursion on the PICs
+ */
+signed char check_for_pin_legality(const pps_block *p, peripheral *pr){
+    unsigned char i;
+    for(i = 0; *(p)[i] != NULL; i++)
+        if(*(p)[i] == pr) return i;
+    return -1;
+}
+
+unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral){
+    if(p->pps == NULL) return 0; /* Means the pin is not remappable (RB12) */
+    if(check_for_pin_legality(p->pps, peripheral) == -1) return 0;
+    if(peripheral->io == INPUT) *(peripheral->input_pps) = p->pps_input_code;
+    else *(p->output_pps) = peripheral->output_pps_code;
+    return 1;
+}
+
+signed char pin_is_in_group(const pin *p, const pin_group *pg){
+    unsigned char i;
+    for(i = 0; *(pg)[i] != NULL; i++)
+        if(*(pg)[i] == p) return i;
+    return -1;
+}
+
+inline unsigned char pin_open_drain_selection(const pin *p, unsigned char request){
+    if(pin_is_in_group(p, &open_drain_tolerant) == -1) return 0;
+    if(request == ON) *(p->io->odc) |= p->mask;
+    else *(p->io->odc) &= ~(p->mask);
+    return 1;
+}
+
+signed char pin_is_analog(const pin *p){
+    unsigned char i;
+    for(i = 0; i < 13; i++)
+        if(p == analog_channels[i]) return i;
+    return -1;
+}
+
+inline unsigned char pin_select_working_mode(const pin *p, unsigned char analog_digital){
+    unsigned char ch = pin_is_analog(p);
+    if(ch == -1) return 0;
+    if(analog_digital == ANALOGIC) AD1CSSL |= (1 << ch);
+    else AD1CSSL &= ~(1 << ch);
+    return 1;   
+}
+
+inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated){
+    if(activated == ON) *(p->io->cnen) |= p->mask;
+    else *(p->io->cnen) &= ~(p->mask);
+}
+
+inline void pin_assign_pull_up(const pin *p, unsigned char activated){
+    if(activated == ON) *(p->io->cnpu) |= p->mask;
+    else *(p->io->cnpu) &= ~(p->mask);
+}
+
+inline void pin_assign_pull_down(const pin *p, unsigned char activated){
+    if(activated == ON) *(p->io->cnpd) |= p->mask;
+    else *(p->io->cnpd) &= ~(p->mask);
+}
+
+inline void port_set_direction(const io_port *p, unsigned int mask){
+    *(p->tris) = mask;
+}
+
+inline void port_set_output_state(const io_port *p, unsigned int mask){
+    *(p->lat) = mask;
+}
+
+inline void port_invert(const io_port *p, unsigned char mask){
+    *(p->inv) = mask;
+}
+
+void port_set_change_notice_behaviour(const io_port *p, unsigned char active, unsigned char idle_state){
+    /* Register bit for activation is 15 */
+    if(active == ON) *(p->cnstat) |= (1 << 15);
+    else *(p->cnstat) &= ~(1 << 15);
+    if(idle_state == ON) *(p->cnstat) &= ~(1 << 13);
+    else *(p->cnstat) |= (1 << 13);
+}

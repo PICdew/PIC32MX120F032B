@@ -34,6 +34,15 @@
 int main(void){
     pin_set_direction(&RB1, INPUT);
     pin_set_direction(&RA4, OUTPUT);
+    pin_open_drain_selection(&RB1, ON); /* Does nothing, RB1 not 5V Tolerant */
+    pin_open_drain_selection(&RB5, ON);
+    pin_select_working_mode(&RA3, ANALOGIC); /* Does not work, RA3 not AN port */
+    pin_select_working_mode(&RA0, ANALOGIC);
+    pin_assign_pull_up(&RB0, ON);
+    pin_assign_pull_down(&RB2, ON);
+    pin_assign_interrupt_on_change(&RB1, ON);
+    pin_assign_peripheral(&RA1, &INT4); /* Should do nothing because assignment is illegal */
+    pin_assign_peripheral(&RA0, &INT4);   
     while(1){
         if(pin_read(&RB1) == HIGH) pin_set_output_high(&RA4);
         else pin_set_output_low(&RA4);

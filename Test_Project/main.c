@@ -42,7 +42,7 @@ int main(void){
     pin_assign_pull_down(&RB2, ON);
     pin_assign_interrupt_on_change(&RB1, ON);
     pin_assign_peripheral(&RA1, &INT4); /* Should do nothing because assignment is illegal */
-    pin_assign_peripheral(&RA0, &INT4);   
+    pin_assign_peripheral(&RB3, &INT4);   
     while(1){
         if(pin_read(&RB1) == HIGH) pin_set_output_high(&RA4);
         else pin_set_output_low(&RA4);

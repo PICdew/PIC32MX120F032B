@@ -75,7 +75,7 @@ typedef struct{
     volatile unsigned int *input_pps;
 } peripheral;
 
-typedef const peripheral* pps_block[16];
+typedef const volatile peripheral* pps_block[16];
 
 /**
   @Summary
@@ -167,10 +167,10 @@ typedef struct{
     </ul>
  */
 typedef struct{
-    const io_port *io;
+    const volatile io_port *io;
     const unsigned int mask;
     volatile unsigned int *output_pps;
-    const pps_block *pps;
+    const volatile pps_block *pps;
     const unsigned char pps_input_code;
 } pin;
 
@@ -180,79 +180,79 @@ typedef struct{
  @Description
     It's used to determine peculiar groups (like 5v tolerant pins, analog pins, etc...)
  */
-typedef const pin* pin_group[16];
+typedef const volatile pin* pin_group[16];
 
 
-extern const io_port RA;
-extern const io_port RB;
+extern const volatile io_port RA;
+extern const volatile io_port RB;
 
-extern const pin RA0;
-extern const pin RA1;
-extern const pin RA2;
-extern const pin RA3;
-extern const pin RA4;
+extern const volatile pin RA0;
+extern const volatile pin RA1;
+extern const volatile pin RA2;
+extern const volatile pin RA3;
+extern const volatile pin RA4;
 
-extern const pin RB0;
-extern const pin RB1;
-extern const pin RB2;
-extern const pin RB3;
-extern const pin RB4;
-extern const pin RB5;
-extern const pin RB6;
-extern const pin RB7;
-extern const pin RB8;
-extern const pin RB9;
-extern const pin RB10;
-extern const pin RB11;
-extern const pin RB12;
-extern const pin RB13;
-extern const pin RB14;
-extern const pin RB15;
+extern const volatile pin RB0;
+extern const volatile pin RB1;
+extern const volatile pin RB2;
+extern const volatile pin RB3;
+extern const volatile pin RB4;
+extern const volatile pin RB5;
+extern const volatile pin RB6;
+extern const volatile pin RB7;
+extern const volatile pin RB8;
+extern const volatile pin RB9;
+extern const volatile pin RB10;
+extern const volatile pin RB11;
+extern const volatile pin RB12;
+extern const volatile pin RB13;
+extern const volatile pin RB14;
+extern const volatile pin RB15;
 
-extern const peripheral INT1;
-extern const peripheral INT2;
-extern const peripheral INT3;
-extern const peripheral INT4;
-extern const peripheral T2CK;
-extern const peripheral T3CK;
-extern const peripheral T4CK;
-extern const peripheral T5CK;
-extern const peripheral IC1;
-extern const peripheral IC2;
-extern const peripheral IC3;
-extern const peripheral IC4;
-extern const peripheral IC5;
-extern const peripheral OC1;
-extern const peripheral OC2;
-extern const peripheral OC3;
-extern const peripheral OC4;
-extern const peripheral OC5;
-extern const peripheral REFCLKI;
-extern const peripheral REFCLKO;
-extern const peripheral U1CTS;
-extern const peripheral U1RTS;
-extern const peripheral U1RX;
-extern const peripheral U1TX;
-extern const peripheral U2CTS;
-extern const peripheral U2RTS;
-extern const peripheral U2RX;
-extern const peripheral U2TX;
-extern const peripheral SDI1;
-extern const peripheral SDO1;
-extern const peripheral SS1;
-extern const peripheral SDI2;
-extern const peripheral SDO2;
-extern const peripheral SS2;
-extern const peripheral OCFA;
-extern const peripheral OCFB;
-extern const peripheral C1OUT;
-extern const peripheral C2OUT;
-extern const peripheral C3OUT;
+extern const volatile peripheral INT1;
+extern const volatile peripheral INT2;
+extern const volatile peripheral INT3;
+extern const volatile peripheral INT4;
+extern const volatile peripheral T2CK;
+extern const volatile peripheral T3CK;
+extern const volatile peripheral T4CK;
+extern const volatile peripheral T5CK;
+extern const volatile peripheral IC1;
+extern const volatile peripheral IC2;
+extern const volatile peripheral IC3;
+extern const volatile peripheral IC4;
+extern const volatile peripheral IC5;
+extern const volatile peripheral OC1;
+extern const volatile peripheral OC2;
+extern const volatile peripheral OC3;
+extern const volatile peripheral OC4;
+extern const volatile peripheral OC5;
+extern const volatile peripheral REFCLKI;
+extern const volatile peripheral REFCLKO;
+extern const volatile peripheral U1CTS;
+extern const volatile peripheral U1RTS;
+extern const volatile peripheral U1RX;
+extern const volatile peripheral U1TX;
+extern const volatile peripheral U2CTS;
+extern const volatile peripheral U2RTS;
+extern const volatile peripheral U2RX;
+extern const volatile peripheral U2TX;
+extern const volatile peripheral SDI1;
+extern const volatile peripheral SDO1;
+extern const volatile peripheral SS1;
+extern const volatile peripheral SDI2;
+extern const volatile peripheral SDO2;
+extern const volatile peripheral SS2;
+extern const volatile peripheral OCFA;
+extern const volatile peripheral OCFB;
+extern const volatile peripheral C1OUT;
+extern const volatile peripheral C2OUT;
+extern const volatile peripheral C3OUT;
 
-extern const pps_block GROUP1;
-extern const pps_block GROUP2;
-extern const pps_block GROUP3;
-extern const pps_block GROUP4;
+extern const volatile pps_block GROUP1;
+extern const volatile pps_block GROUP2;
+extern const volatile pps_block GROUP3;
+extern const volatile pps_block GROUP4;
 
 /**
 @Function
@@ -279,7 +279,7 @@ extern const pps_block GROUP4;
     pin_set_direction(&RB4, INPUT); //sets RB4 pin as input (TRISB<5> = 1)
     pin_set_direction(&RA3, OUTPUT); //sets RA3 pin as output (TRISA<4> = 0)
 */
-extern inline void pin_set_direction(const pin *p, unsigned char direction);
+extern inline void pin_set_direction(const volatile pin *p, unsigned char direction);
 
 /**
 @Function
@@ -310,7 +310,7 @@ extern inline void pin_set_direction(const pin *p, unsigned char direction);
     pin_set_output_state(&RB4, HIGH); //sets RB4 pin high (LATB<5> = 1)
     pin_set_output_state(&RA3, LOW); //sets RA3 pin low (LATA<4> = 0)
 */
-extern inline void pin_set_output_state(const pin *p, unsigned char value);
+extern inline void pin_set_output_state(const volatile pin *p, unsigned char value);
 
 /**
 @Function
@@ -335,7 +335,7 @@ extern inline void pin_set_output_state(const pin *p, unsigned char value);
     @code
     pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
 */
-extern inline void pin_set_output_high(const pin *p);
+extern inline void pin_set_output_high(const volatile pin *p);
 
 /**
 @Function
@@ -360,7 +360,7 @@ extern inline void pin_set_output_high(const pin *p);
     @code
     pin_set_output_low(&RB3); //drives RB3 LOW (LATB<4> = 0)
 */
-extern inline void pin_set_output_low(const pin *p);
+extern inline void pin_set_output_low(const volatile pin *p);
 
 /**
 @Function
@@ -386,7 +386,7 @@ extern inline void pin_set_output_low(const pin *p);
     pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
     pin_invert(&RB3);          //inverts RB3 to LOW (LATBINV<4> = 1)
 */
-extern inline void pin_invert(const pin *p);
+extern inline void pin_invert(const volatile pin *p);
 
 /**
 @Function
@@ -412,7 +412,7 @@ extern inline void pin_invert(const pin *p);
     pin_set_output_high(&RB3); //drives RB3 HIGH (LATB<4> = 1)
     pin_invert(&RB3);          //inverts RB3 to LOW (LATBINV<4> = 1)
 */
-extern inline unsigned char pin_read(const pin *p);
+extern inline unsigned char pin_read(const volatile pin *p);
 
 /**
 @Function
@@ -454,7 +454,7 @@ extern inline unsigned char pin_read(const pin *p);
     pin_assign_peripheral(&RB3, &REFCLKI); //assigns REFCLKI peripheral to RB3, returns 1
     pin_assign_peripheral(&RB4, &INT3);    //fails the assignment due to illegal pairing, returns 0
 */
-extern unsigned char pin_assign_peripheral(const pin *p, const peripheral *peripheral);
+extern unsigned char pin_assign_peripheral(const volatile pin *p, const volatile peripheral *peripheral);
 
 /**
 @Function
@@ -490,7 +490,7 @@ extern unsigned char pin_assign_peripheral(const pin *p, const peripheral *perip
     pin_open_drain_selection(&RB7, OFF);//set RB4 as digital, returns 1
     pin_open_drain_selection(&RA0, OFF);//does nothing and returns 0 (pin not 5V-tolerant)
 */
-extern inline unsigned char pin_open_drain_selection(const pin *p, unsigned char request);
+extern inline unsigned char pin_open_drain_selection(const volatile pin *p, unsigned char request);
 
 /**
 @Function
@@ -532,7 +532,7 @@ extern inline unsigned char pin_open_drain_selection(const pin *p, unsigned char
     pin_select_working_mode(&RB3, DIGITAL);//set RB3 as digital, returns 1
     pin_select_working_mode(&RA2, DIGITAL);//does nothing, return 0
 */
-extern inline unsigned char pin_select_working_mode(const pin *p, unsigned char analog_digital);
+extern inline unsigned char pin_select_working_mode(const volatile pin *p, unsigned char analog_digital);
 
 /**
 @Function
@@ -562,7 +562,7 @@ extern inline unsigned char pin_select_working_mode(const pin *p, unsigned char 
     pin_assign_interrupt_on_change(&RB3, ON);  //set Interrupt on change on RB3
     
 */
-extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char activated);
+extern inline void pin_assign_interrupt_on_change(const volatile pin *p, unsigned char activated);
 
 /**
 @Function
@@ -591,7 +591,7 @@ extern inline void pin_assign_interrupt_on_change(const pin *p, unsigned char ac
     pin_assign_pull_up(&RA0, ON); //activates internal pull-up on RA0
     pin_assign_pull_up(&RB3, OFF);//deactivates internal pull-up on RB3
 */
-extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
+extern inline void pin_assign_pull_up(const volatile pin *p, unsigned char activated);
 
 /**
 @Function
@@ -620,7 +620,7 @@ extern inline void pin_assign_pull_up(const pin *p, unsigned char activated);
     pin_assign_pull_down(&RA0, ON); //activates internal pull-down on RA0
     pin_assign_pull_down(&RB3, OFF);//deactivates internal pull-down on RB3
 */
-extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
+extern inline void pin_assign_pull_down(const volatile pin *p, unsigned char activated);
 
 /**
 @Function
@@ -644,7 +644,7 @@ extern inline void pin_assign_pull_down(const pin *p, unsigned char activated);
     @code
     port_set_direction(&RA, 0b11111); //sets entire Port A as Input
 */
-extern inline void port_set_direction(const io_port *p, unsigned int mask);
+extern inline void port_set_direction(const volatile io_port *p, unsigned int mask);
 
 /**
 @Function
@@ -668,7 +668,7 @@ extern inline void port_set_direction(const io_port *p, unsigned int mask);
     @code
     port_set_output_state(&RA, 0b11111); //sets entire Port A output as HIGH
 */
-extern inline void port_set_output_state(const io_port *p, unsigned int mask);
+extern inline void port_set_output_state(const volatile io_port *p, unsigned int mask);
 
 /**
 @Function
@@ -692,7 +692,7 @@ extern inline void port_set_output_state(const io_port *p, unsigned int mask);
     @code
     port_invert(&RA, 0b11111); //inverts entire Port A output as HIGH
 */
-extern inline void port_invert(const io_port *p, unsigned char mask);
+extern inline void port_invert(const volatile io_port *p, unsigned char mask);
 
 /**
 @Function
@@ -718,6 +718,6 @@ extern inline void port_invert(const io_port *p, unsigned char mask);
     @code
     port_set_change_notice_behaviour(&RA, ON, OFF); //sets the Int. on change ON but OFF in idle
 */
-extern void port_set_change_notice_behaviour(const io_port *p, unsigned char active, unsigned char idle_state);
+extern void port_set_change_notice_behaviour(const volatile io_port *p, unsigned char active, unsigned char idle_state);
 
 #endif

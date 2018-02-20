@@ -448,6 +448,9 @@ extern inline unsigned char pin_read(const volatile pin *p);
     SPI clock sources (SCK1 fixed on pin 22, SCK2 fixed on pin 23),
     external Interrupt 0 source (fixed on pin 13) and the entire I2C module
     (SCL on pin 14, SDA on pin 15).
+    Many of the mappable peripherals will take control of the TRIS and PORT by
+    themselves, but that's not a guaranteed behaviour. Be sure to set the pin\
+    direction properly before setting the peripheral.
 
 @Example
     @code

@@ -106,16 +106,16 @@ inline unsigned char pin_read(const pin *p){
  * check if the pin belongs. I'd love to make a smarter search system, but
  * I don't trust (and I don't even think it's allowed) recursion on the PICs
  */
-signed char check_for_pin_legality(const pps_block *p, peripheral *pr){
+signed char check_for_pin_legality(const pps_block p, const peripheral *pr){
     unsigned char i;
-    for(i = 0; *(p)[i] != NULL; i++)
-        if(*(p)[i] == pr) return i;
+    for(i = 0; p[i] != (const peripheral*)NULL; i++)
+        if(p[i] == pr) return i;
     return -1;
 }
 
-unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral){
+unsigned char pin_assign_peripheral(const pin *p, const peripheral *peripheral){
     if(p->pps == NULL) return 0; /* Means the pin is not remappable (RB12) */
-    if(check_for_pin_legality(p->pps, peripheral) == -1) return 0;
+    if(check_for_pin_legality(*(p->pps), peripheral) == -1) return 0;
     if(peripheral->io == INPUT) *(peripheral->input_pps) = p->pps_input_code;
     else *(p->output_pps) = peripheral->output_pps_code;
     return 1;

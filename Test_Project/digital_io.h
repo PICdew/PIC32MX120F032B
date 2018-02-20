@@ -454,7 +454,7 @@ extern inline unsigned char pin_read(const pin *p);
     pin_assign_peripheral(&RB3, &REFCLKI); //assigns REFCLKI peripheral to RB3, returns 1
     pin_assign_peripheral(&RB4, &INT3);    //fails the assignment due to illegal pairing, returns 0
 */
-extern unsigned char pin_assign_peripheral(const pin *p, peripheral *peripheral);
+extern unsigned char pin_assign_peripheral(const pin *p, const peripheral *peripheral);
 
 /**
 @Function
